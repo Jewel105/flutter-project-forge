@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "flutter-project-forge" is now !');
-	const disposable = vscode.commands.registerCommand('flutter-project-forge.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World ');
-	});
-	context.subscriptions.push(disposable);
+	// 注册命令
+	context.subscriptions.push(vscode.commands.registerCommand('flutter-project-forge.helloWorld',async () => {
+		var awser  = await vscode.window.showInformationMessage('Hello',"good","bad");
+		console.log(awser); // good, bad or undefined if user cancels
+	}));
+	
 }
-export function deactivate() {}
+export function deactivate() {} 
