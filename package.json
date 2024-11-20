@@ -18,6 +18,11 @@
         "command": "flutter-project-forge.helloWorld",
         "category": "FlutterProjectForge", 
         "title": "hello"
+      },
+      {
+        "command": "flutter-project-forge.extensions",
+        "category": "FlutterProjectForge", 
+        "title": "generate extensions"
       }
     ]
   },

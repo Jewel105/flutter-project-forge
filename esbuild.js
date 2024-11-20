@@ -1,8 +1,42 @@
 const esbuild = require("esbuild");
+const path = require("path");
+const fs = require('fs');
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
 
+
+// 静态文件目录
+const staticDir = path.resolve(__dirname, 'static');
+// 输出目录
+const outputDir = path.resolve(__dirname, 'dist');
+
+// 复制静态文件的函数
+function copyStaticFiles() {
+    if (!fs.existsSync(staticDir)) {
+        console.warn('Static directory does not exist, skipping...');
+        return;
+    }
+    // 创建输出目录（如果不存在）
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+		const staticDist = path.join(outputDir, 'static');
+		if (!fs.existsSync(staticDist)) {
+			fs.mkdirSync(staticDist, { recursive: true });
+		}
+
+    // 遍历并复制静态文件
+    fs.readdirSync(staticDir).forEach(file => {
+        const srcPath = path.join(staticDir, file);
+        const destPath = path.join(staticDist, file);
+
+        if (fs.statSync(srcPath).isFile()) {
+            fs.copyFileSync(srcPath, destPath);
+            console.log(`Copied: ${file}`);
+        }
+    });
+}
 /**
  * @type {import('esbuild').Plugin}
  */
@@ -48,6 +82,7 @@ async function main() {
 		await ctx.rebuild();
 		await ctx.dispose();
 	}
+	copyStaticFiles(); 
 }
 
 main().catch(e => {
