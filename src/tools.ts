@@ -1,7 +1,12 @@
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-// 复制文件或者文件夹
+/**
+ * 复制文件或文件夹到指定的目录
+ * @param sourcePath 源文件夹或文件的路径.
+ * @param destinationPath 目标文件夹的路径.
+ */
 function handleFileCopy(sourcePath: string, destinationPath: string) {
     const lastDir = path.basename(sourcePath);
     destinationPath = path.join(destinationPath, lastDir);
@@ -34,4 +39,26 @@ function copyFile(sourcePath: string, destinationPath: string) {
     }
 }
 
-export default handleFileCopy;
+
+
+/**
+ * 拉取模版项目
+ * @param repoUrl 远程仓库地址.
+ * @param demoDir 本地存储文件夹名称.
+ */
+function getGithub(repoUrl: string, demoDir: string):void {
+    const tempDir = path.resolve(__dirname, demoDir);
+    if (!fs.existsSync(tempDir)) {
+        // 克隆项目
+        fs.mkdirSync(tempDir, { recursive: true });
+        execSync(`git clone ${repoUrl} ${tempDir}`, { stdio: 'inherit' });
+    } else {
+        // git pull 更新已有项目
+        execSync(`git -C ${tempDir} pull`, { stdio: 'inherit' });
+    }
+}
+
+export {
+    getGithub, handleFileCopy
+};
+
