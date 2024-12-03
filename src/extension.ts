@@ -1,7 +1,7 @@
 import path from 'path';
 import * as vscode from 'vscode';
-import { FLUTTER_DEMO_DIR, LIB_DIR, REPO_URL } from './constant';
-import { isFlutterProject } from './core';
+import { FLUTTER_DEMO_DIR, REPO_URL } from './constant';
+import { createFlutterDemo } from './core';
 import { getGithub, handleFileCopy } from './tools';
 
 
@@ -30,16 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('flutter-project-forge.createFlutterDemo', async (uri) => {
 		// 当前项目的根路径，只取第一个项目
 		const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
-		if (!isFlutterProject(rootPath)) { return; }
-		// 获取github的模版项目
-		getGithub(REPO_URL, FLUTTER_DEMO_DIR);
-		try {
-			const extensionsSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, LIB_DIR);
-			handleFileCopy(extensionsSourcePath, rootPath!);
-		} catch (err) {
-			console.log(err);
-			vscode.window.showErrorMessage('Failed to copy extensions.dart to the project root.');
-		}
+		createFlutterDemo(rootPath);
 	}));
 }
 export function deactivate() { }
