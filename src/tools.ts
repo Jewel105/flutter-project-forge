@@ -7,7 +7,7 @@ import path from 'path';
  * @param sourcePath 源文件夹或文件的路径.
  * @param destinationPath 目标文件夹的路径.
  */
-function handleFileCopy(sourcePath: string, destinationPath: string) {
+export function handleFileCopy(sourcePath: string, destinationPath: string) {
     const lastDir = path.basename(sourcePath);
     destinationPath = path.join(destinationPath, lastDir);
     copyFile(sourcePath, destinationPath);
@@ -46,7 +46,7 @@ function copyFile(sourcePath: string, destinationPath: string) {
  * @param repoUrl 远程仓库地址.
  * @param demoDir 本地存储文件夹名称.
  */
-function getGithub(repoUrl: string, demoDir: string):void {
+export function getGithub(repoUrl: string, demoDir: string): void {
     const tempDir = path.resolve(__dirname, demoDir);
     if (!fs.existsSync(tempDir)) {
         // 克隆项目
@@ -57,8 +57,4 @@ function getGithub(repoUrl: string, demoDir: string):void {
         execSync(`git -C ${tempDir} pull`, { stdio: 'inherit' });
     }
 }
-
-export {
-    getGithub, handleFileCopy
-};
 
