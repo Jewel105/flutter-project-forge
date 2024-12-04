@@ -3,28 +3,57 @@
   "displayName": "Flutter Project Forge",
   "description": "Automate code generation in a Flutter project.",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jewel105/flutter-project-forge.git"
+  },
+  "publisher": "Jewel105",
+  "icon": "logo.png",
+  "README": "README.md",
   "engines": {
     "vscode": "^1.95.0"
   },
   "categories": [
+    "Snippets",
     "Other"
   ],
+  "keywords": [
+    "flutter",
+    "dart",
+    "template",
+    "demo",
+    "generator"
+  ],
   "activationEvents": [
+    "workspaceContains:**/pubspec.yaml"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "flutter-project-forge.extensions",
-        "category": "FlutterProjectForge", 
-        "title": "generate extensions"
+        "category": "FlutterProjectForge",
+        "title": "Forge Extensions"
       },
       {
         "command": "flutter-project-forge.createFlutterDemo",
-        "category": "FlutterProjectForge", 
-        "title": "create flutter demo"
+        "category": "FlutterProjectForge",
+        "title": "Forge Demo"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command":  "flutter-project-forge.createFlutterDemo",
+          "group": "Forge@1"
+        },
+        {
+          "command": "flutter-project-forge.extensions",
+          "group": "Forge@2",
+          "when": "explorerResourceIsFolder && resourceFilename == 'lib'"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
