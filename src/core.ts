@@ -23,9 +23,10 @@ function isFlutterProject(flutterRootPath: string | undefined): boolean {
 
 /**
  * 快速创建项目demo
- * @param rootPath 项目根路径
  */
-export function createFlutterDemo(rootPath: string | undefined): void {
+export function createFlutterDemo(): void {
+  // 当前项目的根路径，只取第一个项目
+  const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
   if (!isFlutterProject(rootPath)) { return; }
   // 获取github的模版项目
   getGithub(REPO_URL, FLUTTER_DEMO_DIR);
@@ -42,5 +43,34 @@ export function createFlutterDemo(rootPath: string | undefined): void {
   } catch (err) {
     console.log(err);
     vscode.window.showErrorMessage('Failed to copy extensions.dart to the project root.');
+  }
+}
+
+
+/**
+ * 生成dio网络请求
+ */
+export function createDioRequest(): void {
+  // 当前项目的根路径，只取第一个项目
+  const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
+  if (!isFlutterProject(rootPath)) { return; }
+  // 获取github的模版项目
+  getGithub(REPO_URL, FLUTTER_DEMO_DIR);
+  try {
+    // lib
+    const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'http');
+    const destinationLibPath = path.join(rootPath!, 'lib', 'core');
+    handleFileCopy(libSourcePath, destinationLibPath);
+    // api
+    const apiPath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'api');
+    const destinationApiPath = path.join(rootPath!, 'lib', 'core');
+    handleFileCopy(apiPath, destinationApiPath);
+    // constant
+    const appConstantPath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'app', 'app_constant.dart');
+    const destinationConstantPath = path.join(rootPath!, 'lib', 'core', 'app');
+    handleFileCopy(appConstantPath, destinationConstantPath);
+  } catch (err) {
+    console.log(err);
+    vscode.window.showErrorMessage('Failed to copy http to the project root.');
   }
 }

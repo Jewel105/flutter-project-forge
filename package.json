@@ -31,9 +31,9 @@
   "contributes": {
     "commands": [
       {
-        "command": "flutter-project-forge.extensions",
+        "command": "flutter-project-forge.http",
         "category": "FlutterProjectForge",
-        "title": "Forge Extensions"
+        "title": "Forge HTTP"
       },
       {
         "command": "flutter-project-forge.createFlutterDemo",
@@ -48,9 +48,9 @@
           "group": "Forge@1"
         },
         {
-          "command": "flutter-project-forge.extensions",
+          "command": "flutter-project-forge.http",
           "group": "Forge@2",
-          "when": "explorerResourceIsFolder && resourceFilename == 'lib'"
+          "when": "explorerResourceIsFolder"
         }
       ]
     }
