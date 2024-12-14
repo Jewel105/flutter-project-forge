@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
-import { FLUTTER_DEMO_DIR, REPO_URL } from './constant';
-import { getGithub, handleFileCopy } from './tools';
+import { FLUTTER_DEMO_DIR } from './constant';
+import { handleFileCopy } from './tools';
 
 /**
  * 判断项目是否是flutter项目
@@ -28,8 +28,7 @@ export function createFlutterDemo(): void {
   // 当前项目的根路径，只取第一个项目
   const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
   if (!isFlutterProject(rootPath)) { return; }
-  // 获取github的模版项目
-  getGithub(REPO_URL, FLUTTER_DEMO_DIR);
+
   try {
     // lib
     const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib');
@@ -54,8 +53,7 @@ export function createDioRequest(): void {
   // 当前项目的根路径，只取第一个项目
   const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
   if (!isFlutterProject(rootPath)) { return; }
-  // 获取github的模版项目
-  getGithub(REPO_URL, FLUTTER_DEMO_DIR);
+
   try {
     // lib
     const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'http');
@@ -72,5 +70,23 @@ export function createDioRequest(): void {
   } catch (err) {
     console.log(err);
     vscode.window.showErrorMessage('Failed to copy http to the project root.');
+  }
+}
+
+/**
+ * 生成sqllite文件
+ */
+export function createSqlRequest(): void {
+  // 当前项目的根路径，只取第一个项目
+  const rootPath = vscode.workspace.workspaceFolders?.at(0)?.uri.path;
+  if (!isFlutterProject(rootPath)) { return; }
+  try {
+    // lib
+    const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'db');
+    const destinationLibPath = path.join(rootPath!, 'lib', 'core');
+    handleFileCopy(libSourcePath, destinationLibPath);
+  } catch (err) {
+    console.log(err);
+    vscode.window.showErrorMessage('Failed to copy database to the project root.');
   }
 }

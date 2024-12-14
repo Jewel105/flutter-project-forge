@@ -31,14 +31,19 @@
   "contributes": {
     "commands": [
       {
+        "command": "flutter-project-forge.createFlutterDemo",
+        "category": "FlutterProjectForge",
+        "title": "Forge Demo"
+      },
+      {
         "command": "flutter-project-forge.http",
         "category": "FlutterProjectForge",
         "title": "Forge HTTP"
       },
       {
-        "command": "flutter-project-forge.createFlutterDemo",
+        "command": "flutter-project-forge.sqlite",
         "category": "FlutterProjectForge",
-        "title": "Forge Demo"
+        "title": "Forge Database"
       }
     ],
     "menus": {
@@ -50,6 +55,11 @@
         {
           "command": "flutter-project-forge.http",
           "group": "Forge@2",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "flutter-project-forge.sqlite",
+          "group": "Forge@3",
           "when": "explorerResourceIsFolder"
         }
       ]
