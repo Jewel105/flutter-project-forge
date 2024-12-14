@@ -1,6 +1,9 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import * as vscode from 'vscode';
+import { LAST_PULL_TIME_KEY } from './constant';
+
 
 /**
  * 复制文件或文件夹到指定的目录
@@ -53,16 +56,25 @@ function copyFile(sourcePath: string, destinationPath: string) {
  * @param repoUrl 远程仓库地址.
  * @param demoDir 本地存储文件夹名称.
  */
-export function getGithub(repoUrl: string, demoDir: string): void {
+export function getGithub(repoUrl: string, demoDir: string, context: vscode.ExtensionContext): void {
     const tempDir = path.resolve(__dirname, demoDir);
     if (!fs.existsSync(tempDir)) {
         console.log('开始克隆项目...');
         // 克隆项目
         fs.mkdirSync(tempDir, { recursive: true });
         execSync(`git clone ${repoUrl} ${tempDir}`, { stdio: 'inherit' });
-        console.log('克隆完成...');
+        const timestamp = Date.now();
+        context.globalState.update(LAST_PULL_TIME_KEY, timestamp);
+        console.log('克隆完成...', timestamp);
     } else {
-        console.log('检查更新...');
+        // 检查是否需要更新
+        const lasttime: number = context.globalState.get(LAST_PULL_TIME_KEY,) ?? 0;
+        const now = Date.now();
+        if (lasttime > now - 1000 * 60 * 60 * 24 * 3) {
+            console.log('3天内拉取过代码，无需更新...', lasttime);
+            return;
+        }
+        console.log('检查更新...', lasttime);
         // 获取本地项目的最新版本号
         const localHash = execSync(`git -C ${tempDir} rev-parse HEAD`).toString().trim();
         // 获取远程仓库的最新版本号
@@ -73,6 +85,7 @@ export function getGithub(repoUrl: string, demoDir: string): void {
         } else {
             console.log('版本号相同，无需更新。');
         }
+        context.globalState.update(LAST_PULL_TIME_KEY, now);
     }
 }
 
