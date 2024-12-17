@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { FLUTTER_DEMO_DIR, REPO_URL } from './constant';
-import { createDioRequest, createFlutterDemo, createSqlRequest } from './core';
-import { getGithub } from './tools';
+import { FLUTTER_DEMO_DIR, REPO_URL } from './common/constant';
+import { createDioRequest, createFlutterDemo, createSqlRequest } from './common/core';
+import { getGithub } from './common/tools';
 
 
 export function activate(context: vscode.ExtensionContext) {
