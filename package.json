@@ -44,10 +44,19 @@
         "command": "flutter-project-forge.sqlite",
         "category": "FlutterProjectForge",
         "title": "Forge Database"
+      },
+      {
+        "command": "flutter-project-forge.createPage",
+        "category": "FlutterProjectForge",
+        "title": "Forge Page"
       }
     ],
     "menus": {
       "explorer/context": [
+        {
+          "command": "flutter-project-forge.createPage",
+          "group": "Forge@1"
+        },
         {
           "command": "flutter-project-forge.createFlutterDemo",
           "group": "Forge@1"

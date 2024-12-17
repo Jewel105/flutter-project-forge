@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR, REPO_URL } from './common/constant';
-import { createDioRequest, createFlutterDemo, createSqlRequest } from './common/core';
+import { createDioRequest, createFlutterDemo, createPage, createSqlRequest } from './common/core';
 import { getGithub } from './common/tools';
 
 
 export function activate(context: vscode.ExtensionContext) {
-	  // 获取github的模版项目
-		getGithub(REPO_URL, FLUTTER_DEMO_DIR,context);
+	// 获取github的模版项目
+	getGithub(REPO_URL, FLUTTER_DEMO_DIR, context);
 
 	// 生成基础demo项目
 	context.subscriptions.push(vscode.commands.registerCommand(
@@ -24,6 +24,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(
 		'flutter-project-forge.sqlite',
 		createSqlRequest,
+	));
+
+
+	// 创建页面
+	context.subscriptions.push(vscode.commands.registerCommand(
+		'flutter-project-forge.createPage',
+		createPage,
 	));
 }
 export function deactivate() { }
