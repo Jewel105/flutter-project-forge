@@ -88,4 +88,36 @@ export function getGithub(repoUrl: string, demoDir: string, context: vscode.Exte
         context.globalState.update(LAST_PULL_TIME_KEY, now);
     }
 }
+/**
+ * 处理page name 为文件或文件夹名称
+ * @param pageName 用户输入的page name
+ */
+export function handlePageFileName(pageName: string): string {
+    if (!pageName) { return pageName; }
+    pageName.replaceAll(/\//g,'');
+    pageName = cutEnd(pageName);
+    // 使用正则表达式替换大写字母，并在其前加上下划线
+    const result = pageName.replace(/([A-Z])/g, '_$1').toLowerCase();
+    return result + '_page';
+}
+
+/**
+ * 处理page name 为类名
+ * @param pageName 用户输入的page name
+ */
+export function handlePageName(pageName: string): string {
+    if (!pageName) { return pageName; }
+    pageName.replaceAll(/\//g,'');
+    pageName = cutEnd(pageName);
+    const words = pageName.split(/[-_]/);
+    return words.map(capitalizeWord).join('') + 'Page';
+}
+
+function capitalizeWord(word: string): string {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function cutEnd(fileName: string): string {
+    return fileName.replace(/(\.dart|page\.dart|page|_page|_page.dart|Page\.dart|Page)$/, '');
+}
 
