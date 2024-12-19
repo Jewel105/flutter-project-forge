@@ -11,6 +11,9 @@ import { LAST_PULL_TIME_KEY } from './constant';
  * @param destinationPath 目标文件夹的路径.
  */
 export function handleFileCopy(sourcePath: string, destinationPath: string) {
+    if (!fs.existsSync(destinationPath)) {
+        fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
+    }
     const lastDir = path.basename(sourcePath);
     destinationPath = path.join(destinationPath, lastDir);
     copyFile(sourcePath, destinationPath);
@@ -19,25 +22,17 @@ export function handleFileCopy(sourcePath: string, destinationPath: string) {
 function copyFile(sourcePath: string, destinationPath: string) {
     try {
         var stats = fs.statSync(sourcePath);
-
         // 如果是文件夹
         if (stats.isDirectory()) {
-            // 如果目标文件夹不存在，则创建
-            if (!fs.existsSync(destinationPath)) {
-                fs.mkdirSync(destinationPath, { recursive: true });
-            }
-
             // 获取源文件夹内的所有文件和子文件夹
             const files = fs.readdirSync(sourcePath);
-
             // 递归调用复制文件夹的内容
             files.forEach((file: string) => {
                 const sourceFilePath = path.join(sourcePath, file);
                 const targetFilePath = path.join(destinationPath, file);
                 copyFile(sourceFilePath, targetFilePath);
             });
-        }
-        else {
+        } else {
             // 如果是文件
             fs.copyFile(sourcePath, destinationPath, () => { });
         }
@@ -94,11 +89,11 @@ export function getGithub(repoUrl: string, demoDir: string, context: vscode.Exte
  */
 export function handlePageFileName(pageName: string): string {
     if (!pageName) { return pageName; }
-    pageName.replaceAll(/\//g,'');
+    pageName.replaceAll(/\//g, '');
     pageName = cutEnd(pageName);
     // 使用正则表达式替换大写字母，并在其前加上下划线
     const result = pageName.replace(/([A-Z])/g, '_$1').toLowerCase();
-    return result + '_page';
+    return result;
 }
 
 /**
@@ -107,7 +102,7 @@ export function handlePageFileName(pageName: string): string {
  */
 export function handlePageName(pageName: string): string {
     if (!pageName) { return pageName; }
-    pageName.replaceAll(/\//g,'');
+    pageName.replaceAll(/\//g, '');
     pageName = cutEnd(pageName);
     const words = pageName.split(/[-_]/);
     return words.map(capitalizeWord).join('') + 'Page';
@@ -119,5 +114,19 @@ function capitalizeWord(word: string): string {
 
 function cutEnd(fileName: string): string {
     return fileName.replace(/(\.dart|page\.dart|page|_page|_page.dart|Page\.dart|Page)$/, '');
+}
+
+/**
+ * 写入文件到指定文件
+ * @param content 用户输入的page name
+ * @param destinationPath 目标目录
+ * @param fileName 文件名称
+ */
+export function writeContentToFile(content: string, destinationPath: string, fileName: string): void {
+    if (!fs.existsSync(destinationPath)) {
+        fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
+    }
+    const filePath = path.join(destinationPath, fileName);
+    fs.writeFileSync(filePath, content, 'utf8');
 }
 

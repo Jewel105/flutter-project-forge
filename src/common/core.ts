@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR } from './constant';
-import { handleFileCopy, handlePageFileName } from './tools';
+import { handleFileCopy, handlePageFileName, handlePageName, writeContentToFile } from './tools';
 
 /**
  * 判断项目是否是flutter项目
@@ -109,27 +109,39 @@ export async function createPage(uri: vscode.Uri): Promise<void> {
   var targetFilePath = uri.path;
   const rootPath = getProjectRoot(targetFilePath);
   if (!isFlutterProject(rootPath)) { return; }
+  // 等待用户输入
+  const pageName = await input("Please Enter Page Name", "login");
+  if (!pageName) {return;}
+  const fileName = handlePageFileName(pageName);
+  // 检查targetFilePath是否包含page目录
+  const pageDir = path.join(rootPath!, 'lib', 'page');
+  if (!targetFilePath.includes(pageDir)) {
+    targetFilePath = path.join(pageDir, fileName);
+  }
+  const demoPagePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'page', 'demo', 'demo_page.dart');
+  let demoPageContent = fs.readFileSync(demoPagePath, 'utf-8');
+  // 替换
+  const pageClass = handlePageName(pageName);
+  demoPageContent = demoPageContent.replaceAll('DemoPage', pageClass);
+  writeContentToFile(demoPageContent, targetFilePath, `${fileName}_page.dart`);
+}
+
+/**
+ * 写入文件到指定文件
+ * @param content 用户输入的page name
+ * @param destinationPath 目标目录
+ * @returns string 用户输入
+ */
+async function input(prompt: string, placeHolder: string): Promise<string | undefined> {
   const namePromptOptions: vscode.InputBoxOptions = {
-    prompt: "Please Input Page Name",
-    placeHolder: "login",
+    prompt: prompt,
+    placeHolder: placeHolder,
   };
   const pageName = await vscode.window.showInputBox(namePromptOptions);
-  console.log('pageName', pageName);
-  if(!pageName) {
+  if (!pageName) {
     vscode.window.showErrorMessage('Please enter a page name.');
     return;
   }
-  var p = handlePageFileName(pageName);
-  console.log('p', p);
-
-  // // 读取demopage
-  // const demoPageSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'pages', 'demo_page.dart');
-  // const demoPageContent = fs.readFileSync(demoPageSourcePath, 'utf-8');
-  // // 构建新页面
-  // const newPageContent = demoPageContent.replace('DemoPage', pageName);
-  // const newPagePath = path.join(rootPath!, 'lib', 'pages', `${pageName}.dart`);
-  // fs.writeFileSync(newPagePath, newPageContent);
-
+  return pageName;
 }
-
 
