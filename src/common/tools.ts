@@ -24,6 +24,9 @@ function copyFile(sourcePath: string, destinationPath: string) {
         var stats = fs.statSync(sourcePath);
         // 如果是文件夹
         if (stats.isDirectory()) {
+            if (!fs.existsSync(destinationPath)) {
+                fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
+            }
             // 获取源文件夹内的所有文件和子文件夹
             const files = fs.readdirSync(sourcePath);
             // 递归调用复制文件夹的内容
