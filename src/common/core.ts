@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR } from './constant';
-import { handleFileCopy, handlePageFileName, handlePageName, writeContentToFile } from './tools';
+import { getCurrentDir, handleFileCopy, handlePageFileName, handlePageName, writeContentToFile } from './tools';
 
 /**
  * 判断项目是否是flutter项目
@@ -106,24 +106,55 @@ export function createSqlRequest(uri: vscode.Uri): void {
  * 创建页面
  */
 export async function createPage(uri: vscode.Uri): Promise<void> {
-  var targetFilePath = uri.path;
-  const rootPath = getProjectRoot(targetFilePath);
-  if (!isFlutterProject(rootPath)) { return; }
-  // 等待用户输入
-  const pageName = await input("Please Enter Page Name", "login");
-  if (!pageName) {return;}
-  const fileName = handlePageFileName(pageName);
-  // 检查targetFilePath是否包含page目录
-  const pageDir = path.join(rootPath!, 'lib', 'page');
-  if (!targetFilePath.includes(pageDir)) {
-    targetFilePath = path.join(pageDir, fileName);
+  try {
+
+    let targetDirPath = getCurrentDir(uri.path);
+    const rootPath = getProjectRoot(targetDirPath);
+    if (!isFlutterProject(rootPath)) { return; }
+    // 等待用户输入
+    const pageName = await input("Please Enter Page Name", "login");
+    if (!pageName) { return; }
+    const fileName = handlePageFileName(pageName);
+    const pageClass = handlePageName(pageName);
+    // 检查targetFilePath是否包含page目录
+    targetDirPath = addPage(rootPath, targetDirPath, fileName, pageClass);
+    // 修改route_config
+    editRouteConfig(rootPath, targetDirPath, fileName, pageClass);
+  } catch (err) {
+    vscode.window.showErrorMessage(`${err}`);
+    return;
   }
+}
+
+/**
+ * 修改路由配置
+ */
+function editRouteConfig(rootPath: string | undefined, targetDirPath: string, fileName: string, pageClass: string) {
+  const routeConfigPath = path.join(rootPath!, 'lib', 'core', 'router', 'route_config.dart');
+  var routeConfigContent = fs.readFileSync(routeConfigPath, 'utf-8');
+  var importDir = targetDirPath.match(/page.*/) ?? [];
+  var newImportString = `.dart';\n\nimport '../../${importDir}/${fileName}_page.dart';\n`;
+  var newImportContent = routeConfigContent.replace(".dart';\n", newImportString);
+  var newPageString = `    '/${fileName}': (Object? arguments) => const ${pageClass}(),\n  };\n`;
+  var newContent = newImportContent.replace("  };\n", newPageString);
+  fs.writeFileSync(routeConfigPath, newContent, 'utf8');
+}
+
+/**
+ * 新增页面
+ */
+function addPage(rootPath: string | undefined, targetDirPath: string, fileName: string, pageClass: string) {
+  const pageDir = path.join(rootPath!, 'lib', 'page');
+  if (!targetDirPath.includes(pageDir)) {
+    targetDirPath = path.join(pageDir, fileName);
+  }
+  // 添加page文件
   const demoPagePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'page', 'demo', 'demo_page.dart');
   let demoPageContent = fs.readFileSync(demoPagePath, 'utf-8');
-  // 替换
-  const pageClass = handlePageName(pageName);
+  // 替换文件
   demoPageContent = demoPageContent.replaceAll('DemoPage', pageClass);
-  writeContentToFile(demoPageContent, targetFilePath, `${fileName}_page.dart`);
+  writeContentToFile(demoPageContent, targetDirPath, `${fileName}_page.dart`);
+  return targetDirPath;
 }
 
 /**

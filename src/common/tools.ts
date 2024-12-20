@@ -133,3 +133,16 @@ export function writeContentToFile(content: string, destinationPath: string, fil
     fs.writeFileSync(filePath, content, 'utf8');
 }
 
+
+/**
+ * 获取当前文件的
+ * @param targetFilePath 文件或文件夹路径
+ * @returns 文件夹的路径
+ */
+export function getCurrentDir(targetFilePath: string):string {
+  var stats = fs.statSync(targetFilePath);
+  if (stats.isFile()) {
+    targetFilePath = path.dirname(targetFilePath);
+  }
+  return targetFilePath;
+}

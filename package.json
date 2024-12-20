@@ -59,8 +59,7 @@
         },
         {
           "command": "flutter-project-forge.createPage",
-          "group": "Forge@1",
-          "when": "explorerResourceIsFolder"
+          "group": "Forge@1"
         },
         {
           "command": "flutter-project-forge.http",
