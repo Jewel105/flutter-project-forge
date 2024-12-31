@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR } from './constant';
-import { getCurrentDir, handleFileCopy, handlePageFileName, handlePageName, writeContentToFile } from './tools';
+import { getCurrentDir, handleFileCopy, handlePageFileName, handlePageName, pushToEnd, writeContentToFile } from './tools';
 
 /**
  * 判断项目是否是flutter项目
@@ -66,7 +66,6 @@ export function createFlutterDemo(uri: vscode.Uri): void {
 export function createDioRequest(uri: vscode.Uri): void {
   const rootPath = getProjectRoot(uri.path);
   if (!isFlutterProject(rootPath)) { return; }
-
   try {
     // lib
     const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'http');
@@ -77,14 +76,21 @@ export function createDioRequest(uri: vscode.Uri): void {
     const destinationApiPath = path.join(rootPath!, 'lib', 'core');
     handleFileCopy(apiPath, destinationApiPath);
     // constant
-    const appConstantPath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'core', 'app', 'app_constant.dart');
     const destinationConstantPath = path.join(rootPath!, 'lib', 'core', 'app');
-    handleFileCopy(appConstantPath, destinationConstantPath);
+    const projectConstantPath = path.join(destinationConstantPath, 'app_constant.dart');
+    const demoConstantContent = 'const String TOKEN = "token";';
+    pushToEnd(projectConstantPath, demoConstantContent);
+    // index.dart
+    const appIndexPath = path.join(rootPath!, 'lib', 'core', 'app', 'index.dart');
+    const demoIndexContent = "export 'app_constant.dart';";
+    pushToEnd(appIndexPath, demoIndexContent);
   } catch (err) {
     console.log(err);
     vscode.window.showErrorMessage('Failed to copy http to the project root.');
   }
 }
+
+
 
 /**
  * 生成sqllite文件

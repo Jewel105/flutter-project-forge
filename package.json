@@ -63,13 +63,11 @@
         },
         {
           "command": "flutter-project-forge.http",
-          "group": "Forge@2",
-          "when": "explorerResourceIsFolder"
+          "group": "Forge@2"
         },
         {
           "command": "flutter-project-forge.sqlite",
-          "group": "Forge@3",
-          "when": "explorerResourceIsFolder"
+          "group": "Forge@3"
         }
       ]
     }

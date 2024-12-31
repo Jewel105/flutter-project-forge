@@ -22,6 +22,7 @@ export function handleFileCopy(sourcePath: string, destinationPath: string) {
 function copyFile(sourcePath: string, destinationPath: string) {
     try {
         var stats = fs.statSync(sourcePath);
+
         // 如果是文件夹
         if (stats.isDirectory()) {
             if (!fs.existsSync(destinationPath)) {
@@ -148,15 +149,19 @@ function cutEnd(fileName: string): string {
 /**
  * 写入文件到指定文件
  * @param content 用户输入的page name
- * @param destinationPath 目标目录
+ * @param destinationPath 目标目录或文件
  * @param fileName 文件名称
  */
-export function writeContentToFile(content: string, destinationPath: string, fileName: string): void {
-    if (!fs.existsSync(destinationPath)) {
-        fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
+export function writeContentToFile(content: string, destinationPath: string, fileName?: string | undefined): void {
+    if (fileName) {
+        if (!fs.existsSync(destinationPath)) {
+            fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
+        }
+        const filePath = path.join(destinationPath, fileName);
+        fs.writeFileSync(filePath, content, 'utf8');
+    } else {
+        fs.writeFileSync(destinationPath, content, 'utf8');
     }
-    const filePath = path.join(destinationPath, fileName);
-    fs.writeFileSync(filePath, content, 'utf8');
 }
 
 
@@ -171,4 +176,24 @@ export function getCurrentDir(targetFilePath: string): string {
         targetFilePath = path.dirname(targetFilePath);
     }
     return targetFilePath;
+}
+
+
+
+/**
+ * 追加内容到文件末尾
+ * @param file 文件路径
+ * @param content 需要追加的内容
+ **/
+export function pushToEnd(file: string, content: string) {
+    if (fs.existsSync(file)) {
+        // 读取文件，追加内容
+        let fileContent = fs.readFileSync(file, 'utf-8');
+        if (!fileContent.includes(content)) {
+            fileContent += '\n' + content;
+            writeContentToFile(fileContent, file);
+        }
+    } else {
+        writeContentToFile(content, file);
+    }
 }
