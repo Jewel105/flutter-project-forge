@@ -9,7 +9,7 @@
   },
   "publisher": "JewelYi",
   "icon": "logo.png",
-  "README": "README.md",
+  "README": "./MARKET.md",
   "engines": {
     "vscode": "^1.95.0"
   },

@@ -90,8 +90,6 @@ export function createDioRequest(uri: vscode.Uri): void {
   }
 }
 
-
-
 /**
  * 生成sqllite文件
  */
@@ -113,7 +111,6 @@ export function createSqlRequest(uri: vscode.Uri): void {
  */
 export async function createPage(uri: vscode.Uri): Promise<void> {
   try {
-
     let targetDirPath = getCurrentDir(uri.path);
     const rootPath = getProjectRoot(targetDirPath);
     if (!isFlutterProject(rootPath)) { return; }
@@ -164,7 +161,7 @@ function addPage(rootPath: string | undefined, targetDirPath: string, fileName: 
 }
 
 /**
- * 写入文件到指定文件
+ * 用户输入框
  * @param content 用户输入的page name
  * @param destinationPath 目标目录
  * @returns string 用户输入
