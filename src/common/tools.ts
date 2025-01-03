@@ -9,20 +9,29 @@ import { LAST_PULL_TIME_KEY, REPO_URL_BACKUP } from './constant';
  * 复制文件或文件夹到指定的目录
  * @param sourcePath 源文件夹或文件的路径.
  * @param destinationPath 目标文件夹的路径.
+ * @param ignorePathList 需要忽略的文件
  */
-export function handleFileCopy(sourcePath: string, destinationPath: string) {
+export function handleFileCopy(sourcePath: string, destinationPath: string, ignorePathList?: string[]): void {
     if (!fs.existsSync(destinationPath)) {
         fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
     }
     const lastDir = path.basename(sourcePath);
     destinationPath = path.join(destinationPath, lastDir);
-    copyFile(sourcePath, destinationPath);
+    copyFile(sourcePath, destinationPath, ignorePathList);
 };
 
-function copyFile(sourcePath: string, destinationPath: string) {
+function copyFile(sourcePath: string, destinationPath: string, ignorePathList?: string[]) {
+    // 如果忽略列表中存在该路径，不拷贝
+    if (ignorePathList) {
+        for (const ignorePath of ignorePathList) {
+            if (sourcePath.includes(ignorePath)) {
+                return;
+            }
+        }
+    }
+
     try {
         var stats = fs.statSync(sourcePath);
-
         // 如果是文件夹
         if (stats.isDirectory()) {
             if (!fs.existsSync(destinationPath)) {
@@ -34,7 +43,7 @@ function copyFile(sourcePath: string, destinationPath: string) {
             files.forEach((file: string) => {
                 const sourceFilePath = path.join(sourcePath, file);
                 const targetFilePath = path.join(destinationPath, file);
-                copyFile(sourceFilePath, targetFilePath);
+                copyFile(sourceFilePath, targetFilePath, ignorePathList);
             });
         } else {
             // 如果是文件

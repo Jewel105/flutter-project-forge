@@ -46,13 +46,27 @@ export function createFlutterDemo(uri: vscode.Uri): void {
   try {
     // lib
     const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib');
-    handleFileCopy(libSourcePath, rootPath!);
+    // 忽略数据库文件
+    handleFileCopy(libSourcePath, rootPath!, [path.join('lib', 'core', 'db')]);
     // .vscode
     const vscodeConfigSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, '.vscode');
     handleFileCopy(vscodeConfigSourcePath, rootPath!);
     // l10n.yaml
     const l10nSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'l10n.yaml');
     handleFileCopy(l10nSourcePath, rootPath!);
+    // scan info.plist 增加权限
+    const infoPath = path.join(rootPath!, 'ios', 'Runner', 'Info.plist');
+    var infoContent = fs.readFileSync(infoPath, 'utf-8');
+    let cameraInfo = infoContent.includes('<key>NSCameraUsageDescription</key>');
+    let photoInfo = infoContent.includes('<key>NSPhotoLibraryUsageDescription</key>');
+    var newString = `${cameraInfo ? '' : `  <key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to scan QR codes</string>`} 
+  ${photoInfo ? '' : `<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photos access to get QR code from photo library</string>`} 
+</dict>`;
+    var newContent = infoContent.replace("</dict>", newString);
+    var targetFilePath = path.join(rootPath!, 'ios', 'Runner', 'Info.plist');
+    writeContentToFile(newContent, targetFilePath);
   } catch (err) {
     console.log(err);
     vscode.window.showErrorMessage('Failed to copy extensions.dart to the project root.');
