@@ -92,7 +92,7 @@ export function createDioRequest(uri: vscode.Uri): void {
     // constant
     const destinationConstantPath = path.join(rootPath!, 'lib', 'core', 'app');
     const projectConstantPath = path.join(destinationConstantPath, 'app_constant.dart');
-    const demoConstantContent = 'const String TOKEN = "token";';
+    const demoConstantContent = 'static const String TOKEN = "token";';
     pushToEnd(projectConstantPath, demoConstantContent);
     // index.dart
     const appIndexPath = path.join(rootPath!, 'lib', 'core', 'app', 'index.dart');

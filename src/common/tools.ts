@@ -92,8 +92,8 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
             // 检查是否需要更新
             const lasttime: number = context.globalState.get(LAST_PULL_TIME_KEY,) ?? 0;
             const now = Date.now();
-            if (lasttime > now - 1000 * 60 * 60 * 24 * 3) {
-                console.log('3天内拉取过代码，无需更新...', lasttime);
+            if (lasttime > now - 1000 * 60 * 60 * 24 * 2) {
+                console.log('2天内拉取过代码，无需更新...', lasttime);
                 return;
             }
             console.log('检查更新...', lasttime);
@@ -199,7 +199,12 @@ export function pushToEnd(file: string, content: string) {
         // 读取文件，追加内容
         let fileContent = fs.readFileSync(file, 'utf-8');
         if (!fileContent.includes(content)) {
-            fileContent += '\n' + content;
+            // 如果是类，就添加到类的末尾
+            if (fileContent.includes('class')) {
+                fileContent = fileContent.replaceAll('}', `  ${content}` + '\n}\n');
+            } else {
+                fileContent += '\n' + content;
+            }
             writeContentToFile(fileContent, file);
         }
     } else {
