@@ -49,6 +49,11 @@
         "command": "flutter-project-forge.createPage",
         "category": "FlutterProjectForge",
         "title": "Forge Page"
+      },
+      {
+        "command": "flutter-project-forge.scan",
+        "category": "FlutterProjectForge",
+        "title": "Forge Scan"
       }
     ],
     "menus": {
@@ -68,6 +73,10 @@
         {
           "command": "flutter-project-forge.sqlite",
           "group": "Forge@3"
+        },
+        {
+          "command": "flutter-project-forge.scan",
+          "group": "Forge@4"
         }
       ]
     }

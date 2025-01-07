@@ -193,14 +193,16 @@ export function getCurrentDir(targetFilePath: string): string {
  * 追加内容到文件末尾
  * @param file 文件路径
  * @param content 需要追加的内容
+ * @param isObject 可选，是否需要添加到大括号内，默认为false
+ * @param createFile 可选，文件不存在自动创建文件，默认为true
  **/
-export function pushToEnd(file: string, content: string) {
+export function pushToEnd(file: string, content: string, isObject: boolean = false, createFile: boolean = true): void {
     if (fs.existsSync(file)) {
         // 读取文件，追加内容
         let fileContent = fs.readFileSync(file, 'utf-8');
         if (!fileContent.includes(content)) {
             // 如果是类，就添加到类的末尾
-            if (fileContent.includes('class')) {
+            if (isObject) {
                 fileContent = fileContent.replaceAll('}', `  ${content}` + '\n}\n');
             } else {
                 fileContent += '\n' + content;
@@ -208,6 +210,6 @@ export function pushToEnd(file: string, content: string) {
             writeContentToFile(fileContent, file);
         }
     } else {
-        writeContentToFile(content, file);
+        if (createFile) { writeContentToFile(content, file); }
     }
 }

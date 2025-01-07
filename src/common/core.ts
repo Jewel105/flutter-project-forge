@@ -55,18 +55,7 @@ export function createFlutterDemo(uri: vscode.Uri): void {
     const l10nSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'l10n.yaml');
     handleFileCopy(l10nSourcePath, rootPath!);
     // scan info.plist 增加权限
-    const infoPath = path.join(rootPath!, 'ios', 'Runner', 'Info.plist');
-    var infoContent = fs.readFileSync(infoPath, 'utf-8');
-    let cameraInfo = infoContent.includes('<key>NSCameraUsageDescription</key>');
-    let photoInfo = infoContent.includes('<key>NSPhotoLibraryUsageDescription</key>');
-    var newString = `${cameraInfo ? '' : `  <key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to scan QR codes</string>`} 
-  ${photoInfo ? '' : `<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photos access to get QR code from photo library</string>`} 
-</dict>`;
-    var newContent = infoContent.replace("</dict>", newString);
-    var targetFilePath = path.join(rootPath!, 'ios', 'Runner', 'Info.plist');
-    writeContentToFile(newContent, targetFilePath);
+    scanInfoPlist(rootPath!);
   } catch (err) {
     console.log(err);
     vscode.window.showErrorMessage('Failed to copy extensions.dart to the project root.');
@@ -90,10 +79,9 @@ export function createDioRequest(uri: vscode.Uri): void {
     const destinationApiPath = path.join(rootPath!, 'lib', 'core');
     handleFileCopy(apiPath, destinationApiPath);
     // constant
-    const destinationConstantPath = path.join(rootPath!, 'lib', 'core', 'app');
-    const projectConstantPath = path.join(destinationConstantPath, 'app_constant.dart');
+    const projectConstantPath = path.join(rootPath!, 'lib', 'core', 'app', 'app_constant.dart');
     const demoConstantContent = 'static const String TOKEN = "token";';
-    pushToEnd(projectConstantPath, demoConstantContent);
+    pushToEnd(projectConstantPath, demoConstantContent, true);
     // index.dart
     const appIndexPath = path.join(rootPath!, 'lib', 'core', 'app', 'index.dart');
     const demoIndexContent = "export 'app_constant.dart';";
@@ -107,7 +95,7 @@ export function createDioRequest(uri: vscode.Uri): void {
 /**
  * 生成sqllite文件
  */
-export function createSqlRequest(uri: vscode.Uri): void {
+export function createSql(uri: vscode.Uri): void {
   const rootPath = getProjectRoot(uri.path);
   if (!isFlutterProject(rootPath)) { return; }
   try {
@@ -120,6 +108,60 @@ export function createSqlRequest(uri: vscode.Uri): void {
     vscode.window.showErrorMessage('Failed to copy database to the project root.');
   }
 }
+
+
+/**
+ * 生成sqllite文件
+ */
+export function createScan(uri: vscode.Uri): void {
+  const rootPath = getProjectRoot(uri.path);
+  if (!isFlutterProject(rootPath)) { return; }
+  try {
+    // lib
+    const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'page', 'base', 'scan_page.dart');
+    const destinationLibPath = path.join(rootPath!, 'lib', 'page', 'base');
+    handleFileCopy(libSourcePath, destinationLibPath);
+    // scan info.plist 增加权限
+    scanInfoPlist(rootPath!);
+    // 添加翻译dist/flutter_normal_demo/lib/core/l10n/app_en.arb
+    const enPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_en.arb');
+    const enContent = `,
+  "controllerNotReady": "Controller not ready",
+  "permissionDenied": "Permission denied",
+  "scanUnsupported": "Scanning is unsupported on this device",
+  "genericError": "Generic Error"`;
+    pushToEnd(enPath, enContent, true, false);
+    const hiPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_hi.arb');
+    const hiContent = `,
+  "controllerNotReady": "कंट्रोलर तैयार नहीं है",
+  "permissionDenied": "अनुमति अस्वीकार कर दी गई",
+  "scanUnsupported": "इस डिवाइस पर स्कैनिंग समर्थित नहीं है",
+  "genericError": "सामान्य त्रुटि"`;
+    pushToEnd(hiPath, hiContent, true, false);
+    const zhPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_zh.arb');
+    const zhContent = `,
+  "controllerNotReady": "控制器未准备好",
+  "permissionDenied": "权限被拒绝",
+  "scanUnsupported": "此设备不支持扫描",
+  "genericError": "通用错误"`;
+    pushToEnd(zhPath, zhContent, true, false);
+    const ptPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_pt.arb');
+    const ptContent = `,
+  "controllerNotReady": "Controlador não está pronto",
+  "permissionDenied": "Permissão negada",
+  "scanUnsupported": "A digitalização não é suportada neste dispositivo",
+  "genericError": "Erro genérico"`;
+    pushToEnd(ptPath, ptContent, true, false);
+    // 添加常量
+    const projectConstantPath = path.join(rootPath!, 'lib', 'core', 'app', 'app_constant.dart');
+    const demoConstantContent = 'static const String SCANHANDLERTAG = "scan_handler_tag";';
+    pushToEnd(projectConstantPath, demoConstantContent, true);
+  } catch (err) {
+    console.log(err);
+    vscode.window.showErrorMessage('Failed to create ScanPage to the project root.');
+  }
+}
+
 /**
  * 创建页面
  */
@@ -193,3 +235,21 @@ async function input(prompt: string, placeHolder: string): Promise<string | unde
   return pageName;
 }
 
+/**
+ * 添加扫码权限到ios Info.plist文件下
+ * @param rootPath 项目根目录
+ */
+function scanInfoPlist(rootPath: string) {
+  const infoPath = path.join(rootPath, 'ios', 'Runner', 'Info.plist');
+  var infoContent = fs.readFileSync(infoPath, 'utf-8');
+  let cameraInfo = infoContent.includes('<key>NSCameraUsageDescription</key>');
+  let photoInfo = infoContent.includes('<key>NSPhotoLibraryUsageDescription</key>');
+  var newString = `${cameraInfo ? '' : `  <key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to scan QR codes</string>`} 
+  ${photoInfo ? '' : `<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photos access to get QR code from photo library</string>`} 
+</dict>`;
+  var newContent = infoContent.replace("</dict>", newString);
+  var targetFilePath = path.join(rootPath!, 'ios', 'Runner', 'Info.plist');
+  writeContentToFile(newContent, targetFilePath);
+}

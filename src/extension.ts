@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR, REPO_URL } from './common/constant';
-import { createDioRequest, createFlutterDemo, createPage, createSqlRequest } from './common/core';
+import { createDioRequest, createFlutterDemo, createPage, createScan, createSql } from './common/core';
 import { getGithub } from './common/tools';
 
 
@@ -23,9 +23,15 @@ export function activate(context: vscode.ExtensionContext) {
 	// 生成sqllite文件
 	context.subscriptions.push(vscode.commands.registerCommand(
 		'flutter-project-forge.sqlite',
-		createSqlRequest,
+		createSql,
 	));
 
+
+	// 添加scan页面
+	context.subscriptions.push(vscode.commands.registerCommand(
+		'flutter-project-forge.scan',
+		createScan,
+	));
 
 	// 创建页面
 	context.subscriptions.push(vscode.commands.registerCommand(
