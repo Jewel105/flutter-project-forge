@@ -2,7 +2,7 @@
   "name": "flutter-project-forge",
   "displayName": "Flutter Project Forge",
   "description": "Automate code generation in a Flutter project.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/Jewel105/flutter-project-forge.git"
