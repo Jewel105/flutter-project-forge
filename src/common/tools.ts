@@ -6,13 +6,16 @@ import { LAST_PULL_TIME_KEY, REPO_URL_BACKUP } from './constant';
 
 
 /**
+ * Duplicate a file or directory to a new location.
  * 复制文件或文件夹到指定的目录
- * @param sourcePath 源文件夹或文件的路径.
- * @param destinationPath 目标文件夹的路径.
- * @param ignorePathList 需要忽略的文件
+ * @param sourcePath The path of the source folder or file. 源文件夹或文件的路径.
+ * @param destinationPath The path of the target folder. 目标文件夹的路径.
+ * @param ignorePathList Provide an array of file paths to ignore. 需要忽略的文件
+ * 
  */
 export function handleFileCopy(sourcePath: string, destinationPath: string, ignorePathList?: string[]): void {
     if (!fs.existsSync(destinationPath)) {
+        // If the destination path does not exist, create it
         fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
     }
     const lastDir = path.basename(sourcePath);
@@ -22,6 +25,7 @@ export function handleFileCopy(sourcePath: string, destinationPath: string, igno
 
 function copyFile(sourcePath: string, destinationPath: string, ignorePathList?: string[]) {
     // 如果忽略列表中存在该路径，不拷贝
+    // If the ignore list contains this path, do not copy
     if (ignorePathList) {
         for (const ignorePath of ignorePathList) {
             if (sourcePath.includes(ignorePath)) {
@@ -32,14 +36,19 @@ function copyFile(sourcePath: string, destinationPath: string, ignorePathList?: 
 
     try {
         var stats = fs.statSync(sourcePath);
-        // 如果是文件夹
+        // If it is a folder, create it and copy its contents recursively
+        // 获取源文件夹内的所有文件和子文件夹
+        // Recursively copy the contents of the folder into the destination folder
+        // 并递归文件夹内的内容到目标文件夹中
         if (stats.isDirectory()) {
             if (!fs.existsSync(destinationPath)) {
                 fs.mkdirSync(destinationPath, { recursive: true });  // 创建目录
             }
             // 获取源文件夹内的所有文件和子文件夹
+            // Get all files and subfolders
             const files = fs.readdirSync(sourcePath);
-            // 递归调用复制文件夹的内容
+            // Recursively copy the contents of the folder into the destination folder
+            // 并递归文件夹内的内容到目标文件夹中
             files.forEach((file: string) => {
                 const sourceFilePath = path.join(sourcePath, file);
                 const targetFilePath = path.join(destinationPath, file);
@@ -47,6 +56,7 @@ function copyFile(sourcePath: string, destinationPath: string, ignorePathList?: 
             });
         } else {
             // 如果是文件
+            // if it is a file, copy it to the destination folder
             fs.copyFile(sourcePath, destinationPath, () => { });
         }
     } catch (e) {
@@ -61,8 +71,9 @@ function copyFile(sourcePath: string, destinationPath: string, ignorePathList?: 
 
 /**
  * 拉取模版项目
- * @param repoUrl 远程仓库地址.
- * @param demoDir 本地存储文件夹名称.
+ * Get the Flutter demo project
+ * @param repoUrl the original repo URL. 远程仓库地址.
+ * @param demoDir the local folder where the project will be stored. 本地存储文件夹名称.
  */
 export async function getGithub(repoUrl: string, demoDir: string, context: vscode.ExtensionContext): Promise<void> {
     const tempDir = path.resolve(__dirname, demoDir);
@@ -71,8 +82,10 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
         if (!fs.existsSync(pubspacePath)) {
             console.log('开始克隆项目...');
             // 克隆项目
+            // git clone 
             fs.mkdirSync(tempDir, { recursive: true });
             // 弹出加载框
+            // Pop up the loading box.
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -83,13 +96,16 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
                     return 'Flutter Project Forge: git clone completed!';
                 }
             ).then((result) => {
-                vscode.window.showInformationMessage(result); // 弹出任务完成后的提示
+                // 弹出任务完成后的提示
+                // Show the task completion message.
+                vscode.window.showInformationMessage(result);
             });
             const timestamp = Date.now();
             context.globalState.update(LAST_PULL_TIME_KEY, timestamp);
             console.log('克隆完成...', timestamp);
         } else {
             // 检查是否需要更新
+            // Check if the project needs to be updated.
             const lasttime: number = context.globalState.get(LAST_PULL_TIME_KEY,) ?? 0;
             const now = Date.now();
             if (lasttime > now - 1000 * 60 * 60 * 24 * 2) {
@@ -98,8 +114,10 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
             }
             console.log('检查更新...', lasttime);
             // 获取本地项目的最新版本号
+            // Get the local project's latest version number
             const localHash = execSync(`git -C ${tempDir} rev-parse HEAD`).toString().trim();
             // 获取远程仓库的最新版本号
+            // Get the remote project's latest version number
             const remoteHash = execSync(`git ls-remote ${repoUrl} HEAD`).toString().split('\t')[0].trim();
             if (localHash !== remoteHash) {
                 console.log('版本号不同，开始拉取更新...');
@@ -117,6 +135,7 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
             vscode.window.showErrorMessage("Flutter Project Forge: NETWORK ERROR");
         } else {
             // 从备份仓库再拉一次
+            // Get the project from the backup repository
             console.log('从备份仓库再拉一次...');
             getGithub(REPO_URL_BACKUP, demoDir, context);
         }
@@ -124,20 +143,23 @@ export async function getGithub(repoUrl: string, demoDir: string, context: vscod
 }
 /**
  * 处理page name 为文件或文件夹名称
- * @param pageName 用户输入的page name
+ * handle page name to file name or folder name
+ * @param pageName the page name entered by the user. 用户输入的page name
  */
 export function handlePageFileName(pageName: string): string {
     if (!pageName) { return pageName; }
     pageName.replaceAll(/\//g, '');
     pageName = cutEnd(pageName);
     // 使用正则表达式替换大写字母，并在其前加上下划线
+    // Use regular expression to replace uppercase letters, and add an underscore before them
     const result = pageName.replace(/([A-Z])/g, '_$1').toLowerCase();
     return result;
 }
 
 /**
  * 处理page name 为类名
- * @param pageName 用户输入的page name
+ * Handle page name to class name
+ * @param pageName 
  */
 export function handlePageName(pageName: string): string {
     if (!pageName) { return pageName; }
@@ -157,9 +179,10 @@ function cutEnd(fileName: string): string {
 
 /**
  * 写入文件到指定文件
- * @param content 用户输入的page name
- * @param destinationPath 目标目录或文件
- * @param fileName 文件名称
+ * entered content to the specified file
+ * @param content the content to be written to the file
+ * @param destinationPath target file path
+ * @param fileName the file name (optional)
  */
 export function writeContentToFile(content: string, destinationPath: string, fileName?: string | undefined): void {
     if (fileName) {
@@ -176,8 +199,9 @@ export function writeContentToFile(content: string, destinationPath: string, fil
 
 /**
  * 获取当前文件的
- * @param targetFilePath 文件或文件夹路径
- * @returns 文件夹的路径
+ * Get the current file's directory
+ * @param targetFilePath target file path or directory path. 文件或文件夹路径
+ * @returns file's directory. 文件夹的路径
  */
 export function getCurrentDir(targetFilePath: string): string {
     var stats = fs.statSync(targetFilePath);
@@ -191,17 +215,18 @@ export function getCurrentDir(targetFilePath: string): string {
 
 /**
  * 追加内容到文件末尾
- * @param file 文件路径
- * @param content 需要追加的内容
- * @param isObject 可选，是否需要添加到大括号内，默认为false
- * @param createFile 可选，文件不存在自动创建文件，默认为true
+ * push content to the end of the file
+ * @param file file path. 文件路径
+ * @param content the content to be added. 要添加的内容
+ * @param isObject Optional. Whether it needs to be added within curly braces. default:false. 可选，是否需要添加到大括号内，默认为false
+ * @param createFile  Optional. Automatically create the file if it doesn't exist. default:true. 可选，文件不存在自动创建文件，默认为true
  **/
 export function pushToEnd(file: string, content: string, isObject: boolean = false, createFile: boolean = true): void {
     if (fs.existsSync(file)) {
         // 读取文件，追加内容
+        // Read content from the file, and append content if not exists
         let fileContent = fs.readFileSync(file, 'utf-8');
         if (!fileContent.includes(content)) {
-            // 如果是类，就添加到类的末尾
             if (isObject) {
                 fileContent = fileContent.replaceAll('}', `  ${content}` + '\n}\n');
             } else {
