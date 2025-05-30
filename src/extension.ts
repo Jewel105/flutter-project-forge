@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { FLUTTER_DEMO_DIR, REPO_URL } from './common/constant';
-import { createDioRequest, createFlutterDemo, createPage, createScan, createSql } from './common/core';
+import { createDioRequest, createFlutterDemo, createPage, createSql } from './common/core';
 import { getGithub } from './common/tools';
 
 
@@ -37,14 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 	));
 
 
-	// 添加scan页面
-	/*
-	* Add QR code scanning feature
-	*/
-	context.subscriptions.push(vscode.commands.registerCommand(
-		'flutter-project-forge.scan',
-		createScan,
-	));
+
 
 	// 创建页面
 	/*

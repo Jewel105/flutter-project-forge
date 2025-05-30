@@ -110,57 +110,7 @@ export function createSql(uri: vscode.Uri): void {
 }
 
 
-/**
- * 生成sqllite文件
- */
-export function createScan(uri: vscode.Uri): void {
-  const rootPath = getProjectRoot(uri.path);
-  if (!isFlutterProject(rootPath)) { return; }
-  try {
-    // lib
-    const libSourcePath = path.join(__dirname, FLUTTER_DEMO_DIR, 'lib', 'page', 'base', 'scan_page.dart');
-    const destinationLibPath = path.join(rootPath!, 'lib', 'page', 'base');
-    handleFileCopy(libSourcePath, destinationLibPath);
-    // scan info.plist 增加权限
-    scanInfoPlist(rootPath!);
-    // 添加翻译dist/flutter_normal_demo/lib/core/l10n/app_en.arb
-    const enPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_en.arb');
-    const enContent = `,
-  "controllerNotReady": "Controller not ready",
-  "permissionDenied": "Permission denied",
-  "scanUnsupported": "Scanning is unsupported on this device",
-  "genericError": "Generic Error"`;
-    pushToEnd(enPath, enContent, true, false);
-    const hiPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_hi.arb');
-    const hiContent = `,
-  "controllerNotReady": "कंट्रोलर तैयार नहीं है",
-  "permissionDenied": "अनुमति अस्वीकार कर दी गई",
-  "scanUnsupported": "इस डिवाइस पर स्कैनिंग समर्थित नहीं है",
-  "genericError": "सामान्य त्रुटि"`;
-    pushToEnd(hiPath, hiContent, true, false);
-    const zhPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_zh.arb');
-    const zhContent = `,
-  "controllerNotReady": "控制器未准备好",
-  "permissionDenied": "权限被拒绝",
-  "scanUnsupported": "此设备不支持扫描",
-  "genericError": "通用错误"`;
-    pushToEnd(zhPath, zhContent, true, false);
-    const ptPath = path.join(rootPath!, 'lib', 'core', 'l10n', 'app_pt.arb');
-    const ptContent = `,
-  "controllerNotReady": "Controlador não está pronto",
-  "permissionDenied": "Permissão negada",
-  "scanUnsupported": "A digitalização não é suportada neste dispositivo",
-  "genericError": "Erro genérico"`;
-    pushToEnd(ptPath, ptContent, true, false);
-    // 添加常量
-    const projectConstantPath = path.join(rootPath!, 'lib', 'core', 'app', 'app_constant.dart');
-    const demoConstantContent = 'static const String SCANHANDLERTAG = "scan_handler_tag";';
-    pushToEnd(projectConstantPath, demoConstantContent, true);
-  } catch (err) {
-    console.log(err);
-    vscode.window.showErrorMessage('Failed to create ScanPage to the project root.');
-  }
-}
+
 
 /**
  * 创建页面

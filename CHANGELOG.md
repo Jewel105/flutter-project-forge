@@ -1,17 +1,22 @@
-## <small>0.0.4 (2025-01-07)</small>
+## <small>0.0.5 (2025-05-30)</small>
 
-* feat: Implement scanning feature in Flutter project ([e3b570b](https://github.com/Jewel105/flutter-project-forge/commit/e3b570b))
-* fix: createDioRequest replaces index.dart and constant.dart ([024b7d5](https://github.com/Jewel105/flutter-project-forge/commit/024b7d5))
-* fix: pushToEnd ([a8ba414](https://github.com/Jewel105/flutter-project-forge/commit/a8ba414))
-* fix: Unable to git clone flutter_normal_demo ([3292368](https://github.com/Jewel105/flutter-project-forge/commit/3292368))
-* fix(ForgeDemo): Ignore 'db' file and add scan permission to info.plist ([e5c475e](https://github.com/Jewel105/flutter-project-forge/commit/e5c475e))
+* docs: add english annotation ([941eaeb](https://github.com/Jewel105/flutter-project-forge/commit/941eaeb))
+* docs: edit readme-zh ([c59b994](https://github.com/Jewel105/flutter-project-forge/commit/c59b994))
 * chore: add readme for market place ([44a3852](https://github.com/Jewel105/flutter-project-forge/commit/44a3852))
+* chore: changelog ([0f6864f](https://github.com/Jewel105/flutter-project-forge/commit/0f6864f))
 * chore: CHANGELOG.md ([e6641e6](https://github.com/Jewel105/flutter-project-forge/commit/e6641e6))
 * chore: commitlint ([52a2ac8](https://github.com/Jewel105/flutter-project-forge/commit/52a2ac8))
 * chore: conventional-changelog ([f1c81a1](https://github.com/Jewel105/flutter-project-forge/commit/f1c81a1))
 * chore: edit MARKET.md ([792bee6](https://github.com/Jewel105/flutter-project-forge/commit/792bee6))
 * chore: edit MARKET.md ([ad1a879](https://github.com/Jewel105/flutter-project-forge/commit/ad1a879))
 * chore: edit MARKET.md ([fa8ed5f](https://github.com/Jewel105/flutter-project-forge/commit/fa8ed5f))
+* chore: edit README ([66024a7](https://github.com/Jewel105/flutter-project-forge/commit/66024a7))
+* 0.0.4 ([3d0584a](https://github.com/Jewel105/flutter-project-forge/commit/3d0584a))
+* feat: Implement scanning feature in Flutter project ([e3b570b](https://github.com/Jewel105/flutter-project-forge/commit/e3b570b))
+* fix: createDioRequest replaces index.dart and constant.dart ([024b7d5](https://github.com/Jewel105/flutter-project-forge/commit/024b7d5))
+* fix: pushToEnd ([a8ba414](https://github.com/Jewel105/flutter-project-forge/commit/a8ba414))
+* fix: Unable to git clone flutter_normal_demo ([3292368](https://github.com/Jewel105/flutter-project-forge/commit/3292368))
+* fix(ForgeDemo): Ignore 'db' file and add scan permission to info.plist ([e5c475e](https://github.com/Jewel105/flutter-project-forge/commit/e5c475e))
 
 
 

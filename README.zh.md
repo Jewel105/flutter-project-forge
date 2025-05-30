@@ -9,7 +9,6 @@
 - Forge HTTP：生成 HTTP 接口请求模板代码。
 - Forge Database：生成用于创建数据库连接的代码。
 - Forge Page：添加新页面。
-- Forge Scan: 添加二维码扫描功能到Flutter项目。
 
 ## 使用方法
 1. 在 VS Code Marketplace 安装此扩展。
